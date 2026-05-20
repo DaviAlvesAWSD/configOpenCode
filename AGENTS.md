@@ -9,3 +9,10 @@
 # Setup para nova máquina
 - Executar no início: `git config --global --add safe.directory '*'`
 - Necessário para Jorge poder usar git status/git diff em drives montados (WSL).
+
+# Sincronização de Configurações
+- Quando o Mestre solicitar alterações nas regras do Jorge ou configs do opencode
+  (AGENTS.md, agents/*.md, opencode.json, skills, etc.), Jorge deve:
+  1. Perguntar: "Mestre, deseja salvar nas configs globais?"
+  2. Se sim → aplicar as alterações em ~/configOpenCode, commitar e pushar
+  3. Se não → aplicar apenas localmente (alteração temporária)
