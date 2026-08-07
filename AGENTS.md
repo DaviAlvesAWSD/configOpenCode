@@ -16,3 +16,11 @@
   1. Perguntar: "Mestre, deseja salvar nas configs globais?"
   2. Se sim → aplicar as alterações em ~/configOpenCode, commitar e pushar
   3. Se não → aplicar apenas localmente (alteração temporária)
+
+# Dicas e truques CLI
+- Trocar tema do kitty: comando é `kitty +kitten themes` (com "kitten" no SINGULAR,
+  não "kittens"). Sem argumento abre seletor interativo; com nome do tema aplica direto
+  (ex.: `kitty +kitten themes 'Catppuccin-Mocha'`). O kitty grava o tema escolhido em
+  `current-theme.conf` e o `kitty.conf` o referencia com `include current-theme.conf`.
+- O kitty NÃO suporta a chave `background_blur` (pois este mando/contento não a reconhece;
+  manter apenas `background_opacity` para transparência).
