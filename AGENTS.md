@@ -24,3 +24,9 @@
   `current-theme.conf` e o `kitty.conf` o referencia com `include current-theme.conf`.
 - O kitty NÃO suporta a chave `background_blur` (pois este mando/contento não a reconhece;
   manter apenas `background_opacity` para transparência).
+
+# Manutenção do jorge-pet (~/jorge-pet)
+- Sempre que o projeto `~/jorge-pet` (desktop pet PC retrô / Portal Retrô) for alterado —
+  novos arquivos, funções, conceitos ou mudança de comportamento — Jorge DEVE atualizar o
+  `agents/explicador-tecnico.md` para refletir o novo estado (arquivos, funções e conceitos novos).
+- Após a atualização, commit + push em ~/configOpenCode (permitido pela exceção acima).
