@@ -77,8 +77,16 @@ e onde está no código:
      `VT323` (texto do terminal), carregadas via `@font-face`.
    - Sombras **sólidas sem blur** (`box-shadow: 4px 4px 0 var(--line)`), cantos
      retos/chanfrados, `image-rendering: pixelated`. Janela vertical **360x500**
-     (`main.js:10`). Explique `flex`, `@font-face`, `clip-path (monitor-neck)`,
-     `:root { --var }`, variáveis CSS e `@keyframes`.
+     (`main.js:10`).
+   - **Profundidade 2.5D**: as peças usam `inset box-shadow` (moldura com faixa
+     escura `--bege-d` na borda inf/dir, tela `screen` afundada com sombra interna
+     no topo/esq, painel `gab-front` recuado com `inset 0 4px 0`, teclas mecânicas
+     com `inset` claro superior + sombra 1px, mouse com `linear-gradient` de
+     curvatura), **encaixe** (`gab-recess` trapezoidal no topo da CPU recebe a base
+     do monitor) e **sombras de chão** (`gab-shadow` e `mouse-shadow` elípticas na
+     cor `--shadow` `#6C7A9C`). Peças quase coladas (gaps ~2px).
+   - Explique `flex`, `@font-face`, `clip-path (monitor-neck, gab-recess)`,
+     `inset box-shadow`, `linear-gradient`, `:root { --var }` e `@keyframes`.
 6. **Cliente-servidor** — o sistema tem DOIS programas: o `opencode serve` (servidor,
    "cérebro") e o app (cliente, "rosto"). Explique essa divisão e por que é boa.
 7. **systemd user service** — o que é o systemd, o que faz `enable --now`, `Linger`,
@@ -87,7 +95,7 @@ e onde está no código:
    Server-Sent Events (`/event`), e como o chat recebe as respostas em tempo real.
 9. **Autostart `.desktop`** — o que é um arquivo `.desktop`, onde ficam, e como o
    sistema inicia o programa ao ligar o PC.
-10. **Arrasto nativo (`-webkit-app-region`)** (`style.css:35`) — como o plástico do
+10. **Arrasto nativo (`-webkit-app-region`)** (`style.css:32`) — como o plástico do
     monitor/gabinete/teclado/mouse é arrastável pelo sistema, e por que as áreas
     interativas precisam `no-drag` (tela, barra de input, botões Power/Term/LED e o
     botão da moldura). Conte também a história: antes havia uma região invisível sobre
