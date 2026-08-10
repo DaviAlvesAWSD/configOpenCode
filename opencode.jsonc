@@ -5,6 +5,9 @@
       "git commit*": "ask",
       "git push*": "ask",
       "git merge*": "ask"
+    },
+    "external_directory": {
+      "~/jorge-pet/**": "allow"
     }
   }
 }
