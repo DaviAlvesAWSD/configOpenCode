@@ -64,6 +64,15 @@ cat ~/.ssh/id_ed25519.pub   # mostrar para o Mestre adicionar no GitHub
 ssh -T git@github.com
 ```
 
+### 1.1 Shell padrão (zsh + oh-my-zsh)
+O kitty/gnome abrem o shell padrão do usuário. Definir o **zsh** como padrão para que
+as variáveis e o opencode fiquem disponíveis nos terminais:
+```bash
+sudo apt install -y zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+chsh -s $(which zsh)
+```
+
 ### 2. Node.js + Angular (via nvm, LTS)
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash
@@ -97,24 +106,49 @@ sudo ln -sf /opt/maven/bin/mvn /usr/local/bin/mvn
 mvn -version
 ```
 
-### 4. Variáveis de ambiente (~/.bashrc)
-Adicionar (idempotente, só se não existir):
+### 4. Variáveis de ambiente (~/.bashrc e ~/.zshrc)
+Adicionar em **ambos os shells** (idempotente, só se não existir) — como o zsh é o
+shell padrão, o kitty/gnome precisam das mesmas variáveis:
 ```bash
-grep -q 'JAVA_HOME' ~/.bashrc || {
-cat >> ~/.bashrc <<'EOF'
+for RC in ~/.bashrc ~/.zshrc; do
+  if ! grep -q 'JAVA_HOME' "$RC"; then
+    cat >> "$RC" <<'EOF'
 
 # === Jorge: variáveis de ambiente ===
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+export PATH=/home/guest/.opencode/bin:$PATH
 export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
 export PATH="$JAVA_HOME/bin:$PATH"
 export MAVEN_HOME=/opt/maven
 export PATH="$MAVEN_HOME/bin:$PATH"
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 EOF
-}
+  fi
+done
 source ~/.bashrc
 echo "JAVA_HOME=$JAVA_HOME"
 echo "PATH com mvn: $(command -v mvn)"
+echo "opencode (zsh): $(zsh -c 'command -v opencode')"
+```
+
+### 4.1 Prompt com branch git no terminal
+Adicionar (idempotente, só se não existir o marcador `git_prompt`):
+```bash
+grep -q 'git_prompt' ~/.bashrc || {
+cat >> ~/.bashrc <<'EOF'
+
+# === Jorge: branch git no prompt ===
+git_prompt() {
+  local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+  if [ -n "$branch" ]; then
+    echo -ne " \[\033[1;32m\]($branch)\[\033[0m\]"
+  fi
+}
+PS1="\u@\h:\w\$(git_prompt)$ "
+EOF
+}
+source ~/.bashrc
+cd ~/configOpenCode && echo "Teste: $(git_prompt)"   # deve exibir (master/branch)
 ```
 
 ### 5. VS Code (repositório oficial Microsoft)
@@ -222,16 +256,17 @@ Mostre um resumo final no formato:
 ```
 ✅ Ambiente Full Stack configurado
 - Git/SSH: OK (chave: ~/.ssh/id_ed25519.pub)
+- Shell: zsh + oh-my-zsh (padrão)
 - Node v22.x (nvm LTS) + Angular CLI x.y.z
 - Java: Temurin/OpenJDK 21 + Maven x.y.z
 - VS Code: OK (n extensões) + JetBrains Mono
 - IntelliJ Community: /opt/idea (idea)
 - DBeaver: OK
 - Docker: OK + Postgres 17 + Oracle 23ai Free
-- Variáveis: JAVA_HOME, MAVEN_HOME, NVM configurados em ~/.bashrc
+- Variáveis: JAVA_HOME, MAVEN_HOME, NVM e PATH do opencode em ~/.bashrc e ~/.zshrc
 
 ⚠️ Ações manuais:
-  1. Reiniciar o terminal para aplicar ~/.bashrc e o grupo docker
+  1. Fazer logout e login (aplica chsh para zsh e o grupo docker)
   2. (se preciso) Colar a chave pública no GitHub
 
 ```
