@@ -4,7 +4,7 @@ description: Agente professor que explica em detalhe didático o projeto jorge-p
   Use com @explica.
 mode: subagent
 permission:
-  edit: false
+  edit: deny
   bash:
     "*": deny
   webfetch: allow
