@@ -58,16 +58,27 @@ e onde está no código:
    - camada visual (`src/`) — HTML/CSS/JS que o Mestre vê.
 4. **Janela transparente/frameless/always-on-top** — o que cada opção do
    `new BrowserWindow(...)` em `main.js:10` faz (compare com janelas normais).
-5. **CSS do pixel 32-bit** (`style.css`) — o visual atual é uma "estação retrô" bege com
-   **3 peças**: o monitor de tubo com o CRT (marca JORGE, LED, sinal, tela verde),
-   a torre/gabinete ao lado (LED `#led-tower`, baias de leitor, ventoinha, knobs
-   power/volume e botão TERMINAL) e o teclado decorativo na frente (`buildKeyboard()` em
-   `app.js` gera fileiras de teclas pixel, `SPACE` maior via `.key.space`). Palette bege
-   fiel (`--beige-l/m/d`, `--line-d/x`). Efeitos de CRT mantidos: scanlines, glow,
-   curva da tela, `@keyframes flicker`. A janela cresceu para **560x440** (`main.js:10`).
-   Explique `linear-gradient`, `radial-gradient`, `repeating-linear-gradient`,
-   `mix-blend-mode`, `image-rendering: pixelated`, `box-shadow` (sombras em degrau
-   pixeladas) e `:root { --var }` (variáveis CSS).
+5. **CSS do pixel 8-bit** (`style.css`) — o visual atual é uma **estação retrô VERTICAL** em
+   pixel art, com **flex-direction: column** empilhando estritamente:
+   **monitor de tubo (topo) → gabinete horizontal (meio) → teclado + mouse (base)**.
+   - Peças bege `#E2D7C3`, tela cinza `#3A3F47`, texto **verde neon `#44FE6A`** na tela
+     sem cabeçalho (o label JORGE OK foi removido — o texto começa no topo esquerdo).
+   - Monitor: moldura `monitor-bevel`, tela `screen`, moldura inferior `monitor-lip`
+     com 4 riscas (`lip-slits`/`.slit`) à esquerda e botão `lip-button` à direita,
+     suporte trapezóide `monitor-neck` e base `monitor-base`.
+   - Gabinete (`gabinete`): caixa horizontal **mais larga que o monitor**, com slot de
+     disquete (`disk-slot`, linha escura), botão pixel **TERM** (`term-btn`, Portal
+     Retrô), botão Power vertical preto (`power`) e **LED vermelho quadrado** (`led`).
+   - Teclado (`keyboard`) pixel bege gerado por `buildKeyboard()` em `app.js` (41 teclas,
+     `SPACE` com `.key.space`) e **mouse bege oval** (`mouse`) à direita com cabo fino
+     (`mouse-cable`) conectando à CPU. A barra de digitação real (`input-bar` + `input`)
+     é uma faixa fina pixelada na base da **tela do monitor**.
+   - **Fontes pixel** embutidas em `src/fonts/`: `Press Start 2P` (títulos, teclas) e
+     `VT323` (texto do terminal), carregadas via `@font-face`.
+   - Sombras **sólidas sem blur** (`box-shadow: 4px 4px 0 var(--line)`), cantos
+     retos/chanfrados, `image-rendering: pixelated`. Janela vertical **360x500**
+     (`main.js:10`). Explique `flex`, `@font-face`, `clip-path (monitor-neck)`,
+     `:root { --var }`, variáveis CSS e `@keyframes`.
 6. **Cliente-servidor** — o sistema tem DOIS programas: o `opencode serve` (servidor,
    "cérebro") e o app (cliente, "rosto"). Explique essa divisão e por que é boa.
 7. **systemd user service** — o que é o systemd, o que faz `enable --now`, `Linger`,
@@ -76,11 +87,11 @@ e onde está no código:
    Server-Sent Events (`/event`), e como o chat recebe as respostas em tempo real.
 9. **Autostart `.desktop`** — o que é um arquivo `.desktop`, onde ficam, e como o
    sistema inicia o programa ao ligar o PC.
-10. **Arrasto nativo (`-webkit-app-region`)** (`style.css:15`) — como o plástico do
-    monitor/torre/teclado é arrastável pelo sistema, e por que as áreas interativas
-    precisam `no-drag` (tela, moldura, base, barra de digitação, painel da torre,
-    knobs e botão). Conte também a história: antes havia uma região invisível sobre a
-    janela (`#drag-region`) que bloqueava os cliques no campo de texto — foi removida
+10. **Arrasto nativo (`-webkit-app-region`)** (`style.css:35`) — como o plástico do
+    monitor/gabinete/teclado/mouse é arrastável pelo sistema, e por que as áreas
+    interativas precisam `no-drag` (tela, barra de input, botões Power/Term/LED e o
+    botão da moldura). Conte também a história: antes havia uma região invisível sobre
+    a janela (`#drag-region`) que bloqueava os cliques no campo de texto — foi removida
     em `index.html` e `app.js`.
 11. **Otimização do terminal** (`app.js`) — `line()` escreve o texto de uma vez (mais
     rápido), enquanto `text()` anima caracteres (efeito retrô). `sys()` mostra
@@ -98,25 +109,26 @@ e onde está no código:
 15. **`opencode attach`** (`main.js:41`) — o que significa "anexar" à sessão
     (`-s <sessionID>`, `--dir/--directory`), e por que isso mantém o mesmo histórico
     de chat entre a estação retrô e o terminal.
-16. **Teclado decorativo** (`app.js` → `buildKeyboard()`) — o teclado na frente é
-    visual; as teclas são divs geradas por JS com rótulos de letras, `SPACE` com
-    `.key.space` e `:active` para efeito de apertar. O campo de digitação real
-    (`#input`) fica na barra no topo do teclado (`.keyboard-bar`).
+16. **Teclado e mouse decorativos** (`app.js` → `buildKeyboard()`) — teclado pixel na
+    base gera teclas em `div` via JS com rótulos e `SPACE` via `.key.space`; o mouse é
+    bege oval com cabo fino (`mouse-cable`) conectando à CPU. Ambos puramente visuais.
+    O campo real (`#input`) fica na barra fina da tela do monitor (`.input-bar`).
 17. **Atalho na área de trabalho** (`~/Área de trabalho/Jorge.desktop`) — um arquivo
     `.desktop` com `Exec=~/jorge-pet/launch.sh`, `Icon=jorge-pet`, marcado como
     confiável (`gio set ... metadata::trusted true`) e com permissão de execução para
     o Nemo (Cinnamon) mostrar o ícone clicável sem pedir confirmação.
 18. **Como tudo se conecta (diagrama em texto)** — fluxo de uma mensagem do input
-    até a resposta na tela do monitor, e o fluxo alternativo via botão TERMINAL.
+    até a resposta na tela do monitor, e o fluxo alternativo via botão TERM.
 
 ## Formato final
 
 Termine com:
 
 - Um **diagrama ASCII** do fluxo completo (incluindo o caminho do Portal Retrô).
-- Um **glossário** com ~25 termos (Electron, BrowserWindow, IPC, ipcMain, invoke,
-  preload, contextBridge, CSS, gradiente, variáveis CSS, pixel art, API, HTTP, POST,
-  SSH, SSE, EventSource, systemd, service, .desktop, autostart, renderer, processo,
-  child_process, spawn, detached, attach, session, linger, heartbeat,
-  -webkit-app-region, drag/nodrag, gio metadata::trusted).
+- Um **glossário** com ~28 termos (Electron, BrowserWindow, IPC, ipcMain, invoke,
+  preload, contextBridge, CSS, flexbox, variáveis CSS, @font-face, pixel art, fonte
+  bitmap, VT323, Press Start 2P, API, HTTP, POST, SSH, SSE, EventSource, systemd,
+  service, .desktop, autostart, renderer, processo, child_process, spawn, detached,
+  attach, session, linger, heartbeat, -webkit-app-region, drag/nodrag,
+  gio metadata::trusted, clip-path).
 - Responda a dúvidas que o Mestre fizer em seguida, no mesmo estilo didático.
