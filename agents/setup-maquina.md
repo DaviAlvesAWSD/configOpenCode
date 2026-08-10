@@ -244,6 +244,59 @@ bash ~/configOpenCode/setup.sh
 git clone https://github.com/DaviAlvesAWSD/configOpenCode.git ~/configOpenCode
 ```
 
+### 9.1 Jorge Desktop Pet (PC Retrô CRT)
+Assistente visual que fica na área de trabalho (janela transparente, sempre no topo)
+e conversa com o opencode via servidor local. Duas partes:
+
+**a) Serviço do backend (cérebro) — fica sempre ligado na porta 4096:**
+```bash
+mkdir -p ~/.config/systemd/user
+cat > ~/.config/systemd/user/opencode-web.service <<'EOF'
+[Unit]
+Description=Jorge (Opencode) - servidor do desktop pet retrô
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/guest
+ExecStart=/home/guest/.opencode/bin/opencode serve --port 4096
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+EOF
+systemctl --user daemon-reload
+systemctl --user enable --now opencode-web.service
+sudo loginctl enable-linger $USER   # mantém o serviço mesmo sem login gráfico
+```
+
+**b) App visual (Electron) — o PC retrô na área de trabalho:**
+```bash
+git clone https://github.com/DaviAlvesAWSD/jorge-pet.git ~/jorge-pet 2>/dev/null \
+  || echo "clone manual do app jorge-pet quando existir repositório"
+cd ~/jorge-pet && npm install
+
+chmod +x ~/jorge-pet/launch.sh
+mkdir -p ~/.config/autostart ~/.local/share/applications ~/.local/share/icons
+cat > ~/.config/autostart/jorge-pet.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Jorge (PC Retrô)
+Comment=Assistente desktop retrô (autostart)
+Exec=/home/guest/jorge-pet/launch.sh
+Icon=jorge-pet
+Terminal=false
+Categories=Utility;Development;
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=8
+EOF
+cp ~/.config/autostart/jorge-pet.desktop ~/.local/share/applications/
+```
+> Observação: o visual retrô (tela CRT, scanlines, fósforo verde) fica em
+> `~/jorge-pet/src/style.css`; a conversa via API em `src/app.js`.
+> Use `@explica` para entender o projeto com detalhes didáticos.
+
 ## Conexões dos bancos (para o DBeaver)
 | Banco | Host | Porta | Usuário | Senha | Nome do banco/Service |
 |-------|------|-------|---------|-------|----------------------|
@@ -264,6 +317,7 @@ Mostre um resumo final no formato:
 - DBeaver: OK
 - Docker: OK + Postgres 17 + Oracle 23ai Free
 - Variáveis: JAVA_HOME, MAVEN_HOME, NVM e PATH do opencode em ~/.bashrc e ~/.zshrc
+- Jorge Desktop Pet: serviço opencode-web na porta 4096 + PC retrô no autostart
 
 ⚠️ Ações manuais:
   1. Fazer logout e login (aplica chsh para zsh e o grupo docker)
