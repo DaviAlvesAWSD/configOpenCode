@@ -58,35 +58,46 @@ e onde está no código:
    - camada visual (`src/`) — HTML/CSS/JS que o Mestre vê.
 4. **Janela transparente/frameless/always-on-top** — o que cada opção do
    `new BrowserWindow(...)` em `main.js:10` faz (compare com janelas normais).
-5. **CSS do pixel 8-bit** (`style.css`) — o visual atual é uma **estação retrô VERTICAL** em
-   pixel art, com **flex-direction: column** empilhando estritamente:
+5. **CSS do pixel 8-bit isométrico 2.5D** (`style.css`) — o visual atual é uma
+   **estação retrô VERTICAL em perspectiva isométrica 2.5D**, com
+   **flex-direction: column** empilhando estritamente:
    **monitor de tubo (topo) → gabinete horizontal (meio) → teclado + mouse (base)**.
-   - Peças bege `#E2D7C3`, tela cinza `#3A3F47`, texto **verde neon `#44FE6A`** na tela
-     sem cabeçalho (o label JORGE OK foi removido — o texto começa no topo esquerdo).
-   - Monitor: moldura `monitor-bevel`, tela `screen`, moldura inferior `monitor-lip`
-     com 4 riscas (`lip-slits`/`.slit`) à esquerda e botão `lip-button` à direita,
-     suporte trapezóide `monitor-neck` e base `monitor-base`.
-   - Gabinete (`gabinete`): caixa horizontal **mais larga que o monitor**, com slot de
-     disquete (`disk-slot`, linha escura), botão pixel **TERM** (`term-btn`, Portal
-     Retrô), botão Power vertical preto (`power`) e **LED vermelho quadrado** (`led`).
-   - Teclado (`keyboard`) pixel bege gerado por `buildKeyboard()` em `app.js` (41 teclas,
-     `SPACE` com `.key.space`) e **mouse bege oval** (`mouse`) à direita com cabo fino
-     (`mouse-cable`) conectando à CPU. A barra de digitação real (`input-bar` + `input`)
-     é uma faixa fina pixelada na base da **tela do monitor**.
+   - **Regra master da isometria**: tudo mais longe = mais estreito; tudo mais perto
+     = mais largo. Por isso o projeto quase não tem retângulos: usa **`clip-path:
+     polygon(...)` trapezoidal** com linhas laterais diagonais em quase todas as peças.
+   - Peças bege `#E2D7C3` (frente da CPU `--front` `#ECE5D2`, tela `--tela-n` `#3B3E45`),
+     texto **verde neon `#44FE6A`** na tela sem cabeçalho (o label JORGE OK foi
+     removido — o texto começa no topo esquerdo).
+   - **Monitor** (topo): moldura `monitor-bevel` com **quinas chanfradas 1px**
+     (`clip-path` de 8 pontos), tela `screen` **afundada em "L"** (sombra interna só
+     no topo/esquerda, `inset 5px 5px 10px` — o vidro parece recuado), moldura
+     inferior `monitor-lip` **mais larga que o monitor** com 4 riscas (`lip-slits`) e
+     botão `lip-button`, pescoço `monitor-neck` em **trapézio invertido** (cima larga,
+     base estreita — monitor "espetado" na CPU) e base `monitor-base`.
+   - **Gabinete** (meio, `gabinete`): caixa **mais larga que o monitor**, com **2 faces**:
+     face superior `gab-top-face` (tampa trapezoidal achatada, fundo mais estreito) +
+     frente `gab-front` `#ECE5D2` com **faixa escura contínua 4px** na base
+     (`::after`), slot de disquete (`disk-slot`), botão pixel **TERM** (`term-btn`),
+     Power vertical (`power`) e **LED** (`led`). O encaixe `gab-recess` no topo recebe
+     a base do monitor.
+   - **Teclado** (`keyboard`) = **trapézio deitado**: `clip-path` com topo estreito →
+     base larga, e **fileiras escalonadas** (`nth-child` 1→4 = 62%→100% de largura)
+     criando a rampa em perspectiva. Gerado por `buildKeyboard()` em `app.js` (41
+     teclas, `SPACE` com `.key.space`).
+   - **Mouse** (`mouse`) = **oval achatado na diagonal** (rotate 8°) à direita, com a
+     frente dividida em **2 botões cinza claro** (`.mouse-btn left/right`, cor `--btn`),
+     `mouse-line` central e **cabo cinza fino** (`mouse-cable`, cor `--cabo`) que sai
+     da frente em **arco curvo** para a lateral traseira do gabinete.
+   - **Sombra de chão única** `floor-shadow`: elipse achatada cinza-arroxeada
+     (`--som` `#6C7A9C`) estendida **à direita** sob gabinete + teclado + mouse
+     (luz vinda da esquerda) — substituiu as antigas `gab-shadow`/`mouse-shadow`.
    - **Fontes pixel** embutidas em `src/fonts/`: `Press Start 2P` (títulos, teclas) e
      `VT323` (texto do terminal), carregadas via `@font-face`.
-   - Sombras **sólidas sem blur** (`box-shadow: 4px 4px 0 var(--line)`), cantos
-     retos/chanfrados, `image-rendering: pixelated`. Janela vertical **360x500**
-     (`main.js:10`).
-   - **Profundidade 2.5D**: as peças usam `inset box-shadow` (moldura com faixa
-     escura `--bege-d` na borda inf/dir, tela `screen` afundada com sombra interna
-     no topo/esq, painel `gab-front` recuado com `inset 0 4px 0`, teclas mecânicas
-     com `inset` claro superior + sombra 1px, mouse com `linear-gradient` de
-     curvatura), **encaixe** (`gab-recess` trapezoidal no topo da CPU recebe a base
-     do monitor) e **sombras de chão** (`gab-shadow` e `mouse-shadow` elípticas na
-     cor `--shadow` `#6C7A9C`). Peças quase coladas (gaps ~2px).
-   - Explique `flex`, `@font-face`, `clip-path (monitor-neck, gab-recess)`,
-     `inset box-shadow`, `linear-gradient`, `:root { --var }` e `@keyframes`.
+   - Sombras **sólidas sem blur** (`box-shadow: 4px 4px 0 var(--line)`) e `inset`
+     para profundidade 2.5D; `image-rendering: pixelated`. Janela vertical **400x500**
+     (`main.js:10`). Peças quase coladas (gaps ~2px), sem overflow (scrollH ≤ 500).
+   - Explique `flex`, `@font-face`, `clip-path`, `inset box-shadow`,
+     `linear-gradient`, `:root { --var }` e `@keyframes`.
 6. **Cliente-servidor** — o sistema tem DOIS programas: o `opencode serve` (servidor,
    "cérebro") e o app (cliente, "rosto"). Explique essa divisão e por que é boa.
 7. **systemd user service** — o que é o systemd, o que faz `enable --now`, `Linger`,
@@ -118,9 +129,12 @@ e onde está no código:
     (`-s <sessionID>`, `--dir/--directory`), e por que isso mantém o mesmo histórico
     de chat entre a estação retrô e o terminal.
 16. **Teclado e mouse decorativos** (`app.js` → `buildKeyboard()`) — teclado pixel na
-    base gera teclas em `div` via JS com rótulos e `SPACE` via `.key.space`; o mouse é
-    bege oval com cabo fino (`mouse-cable`) conectando à CPU. Ambos puramente visuais.
-    O campo real (`#input`) fica na barra fina da tela do monitor (`.input-bar`).
+    base gera teclas em `div` via JS com rótulos e `SPACE` via `.key.space`; em
+    isometria as 4 fileiras têm **larguras diferentes** (`keyboard-rows .key-row
+    nth-child 1→4 = 62%→100%`) para encaixar no trapézio do teclado. O mouse é oval
+    bege diagonal com 2 botões cinza na frente e cabo arc (`mouse-cable`). Ambos
+    puramente visuais. O campo real (`#input`) fica na barra fina da tela do monitor
+    (`.input-bar`).
 17. **Atalho na área de trabalho** (`~/Área de trabalho/Jorge.desktop`) — um arquivo
     `.desktop` com `Exec=~/jorge-pet/launch.sh`, `Icon=jorge-pet`, marcado como
     confiável (`gio set ... metadata::trusted true`) e com permissão de execução para
@@ -138,5 +152,6 @@ Termine com:
   bitmap, VT323, Press Start 2P, API, HTTP, POST, SSH, SSE, EventSource, systemd,
   service, .desktop, autostart, renderer, processo, child_process, spawn, detached,
   attach, session, linger, heartbeat, -webkit-app-region, drag/nodrag,
-  gio metadata::trusted, clip-path).
+  gio metadata::trusted, clip-path, isometria, foreshortening, trapézio, sombra de
+  chão).
 - Responda a dúvidas que o Mestre fizer em seguida, no mesmo estilo didático.
