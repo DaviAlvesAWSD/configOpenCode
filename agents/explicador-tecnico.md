@@ -116,9 +116,10 @@ e onde está no código:
     rápido), enquanto `text()` anima caracteres (efeito retrô). `sys()` mostra
     mensagens do sistema. Explique por que criar "1 elemento por caractere" era lento
     e foi eliminado.
-12. **IPC (comunicação interna)** (`main.js:38`) — como o botão da página pede ao
+12. **IPC (comunicação interna)** (`main.js`) — como o botão da página pede ao
     processo principal para abrir um terminal. Explique `ipcMain.handle` + `invoke`,
-    e o papel do `preload.js` como ponte segura.
+    e o papel do `preload.js` como ponte segura. Há também o evento `jorge:attention`
+    (mais sobre no item 18).
 13. **`child_process.spawn`** (`main.js:46`) — como o app abre um programa de fora
     (o `kitty`) sem travar, com `detached: true` e `stdio: 'ignore'`.
 14. **Portal Retrô** — a ideia central atual: a estação retrô é o MASCOTE na área de
@@ -145,6 +146,13 @@ e onde está no código:
     apenas traz a janela existente à frente (`win.show()` + `win.focus()`). Sem isso,
     cada clique criava uma janela transparente idêntica por cima da atual — parecia
     que "nada acontecia" e janelas invisíveis se acumulavam.
+    - **Retorno visual no clique**: o `second-instance` também envia `jorge:attention`
+      ao renderer via `win.webContents.send`; o `preload.js` expõe `onAttention(cb)` e
+      o `app.js` mostra `> já estava aqui!` e aplica a classe `.flash` (animação
+      `jorgeFlash` no `style.css`, brilho verde). Assim o Mestre SABE que o Jorge
+      estava aberto — não parece que o clique "não fez nada".
+    - **`launch.sh` agora registra logs** em `~/.jorge-pet.log` (data, DISPLAY e
+      código de saída) para diagnóstico de falhas.
 19. **Como tudo se conecta (diagrama em texto)** — fluxo de uma mensagem do input
     até a resposta na tela do monitor, e o fluxo alternativo via botão TERM.
 
