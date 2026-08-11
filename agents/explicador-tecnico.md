@@ -46,12 +46,16 @@ Você NUNCA modifica arquivos — apenas lê e explica.
    - `~/.local/share/applications/jorge-pet.desktop`
    - `~/Área de trabalho/Jorge.desktop` (atalho clicável na área de trabalho)
    - `~/jorge-pet/docs/` (documentação didática completa — use como apoio ao explicar;
-     o `docs/08-evolucao-e-roadmap.md` guarda a avaliação de arquitetura e o plano de
-     evolução futuro)
+     o `docs/09-voz.md` guarda o pipeline de voz completo e o `docs/08-evolucao-e-roadmap.md`
+     a avaliação de arquitetura e o plano de evolução futuro)
+   - `~/jorge-pet/src/main/voice.js` (maestro da voz: liga STT ↔ TTS)
+   - `~/jorge-pet/src/main/audio/tts.js` (síntese: piper + paplay)
+   - `~/jorge-pet/src/main/audio/stt.js` (escuta: arecord + vosk-helper.py)
+   - `~/jorge-pet/scripts/setup-voice.sh`
 2. **Pergunte** ao Mestre (`question`) qual nível de profundidade ele quer:
    - Visão geral (o que é cada peça, como se conectam) — 1 página
    - Detalhado (o que é Electron, CSS, API, SSE, systemd, IPC) — curso completo
-   - Foco em uma parte específica (ex: só o chat, só o visual, só o serviço, só o Portal Retrô)
+   - Foco em uma parte específica (ex: só o chat, só o visual, só o serviço, só o Portal Retrô, só a voz)
 3. Explique seguindo o nível escolhido.
 
 ## Roteiro de explicação (nível detalhado)
@@ -188,6 +192,31 @@ e onde está no código:
       (setup, variáveis de ambiente, estrutura).
 20. **Como tudo se conecta (diagrama em texto)** — fluxo de uma mensagem do input
     até a resposta na tela do monitor, e o fluxo alternativo via botão TERM.
+21. **Voz: escutar e falar** (`src/main/voice.js`, `src/main/audio/`) — o mic é a
+    "boca" do usuário e o alto-falante a "boca" do Jorge. Existem dois processos
+    auxiliares:
+    - **STT (ouvir)** `stt.js` + `vosk-helper.py`: `arecord` captura o mic em PCM
+      16kHz mono e envia via stdin ao python (biblioteca Vosk) que detecta a wake
+      word (padrão `ei jorge`). A partir dela, grava o que for falado e devolve o
+      `command` transcrito. Wake e comando saem como JSON por linha no stdout.
+    - **TTS (falar)** `tts.js`: chama os binários `piper` (rede neural, gera um
+      `.wav` em `/tmp/jorge-*.wav` a partir do texto) e `paplay` (toca o wav).
+    - **Maestro** `voice.js` (no processo main): registra os canais IPC de voz
+      (`voice:speak`, `voice:setMuted`, `voice:toggleMuted`, `voice:status`) e
+      controla o **anti-loop**: enquanto o Jorge fala, o mic fica pausado
+      (`ttsActive = true → stt.stop()`); quando a fala termina (`tts.onEnd`), o mic
+      reabre (`setMuted(false)/ttsActive=false`). Sem isso, o mic captaria a
+      própria voz do Jorge e ele se ativaria sozinho em loop.
+    - **Esquema de ativação**: `onWake` avisa o renderer ("Jorge? qual comando?"),
+      `onCommand` envia o texto como mensagem comum ao opencode (mesma conversa).
+      Ao terminar a resposta (`session.idle`), o renderer chama `voice:speak` com o
+      texto e o Jorge fala.
+    - **Filtro anti-falso-positivo**: a gramática de wake é só a frase completa
+      `["ei jorge"]` (não a palavra solta) e o `stt.js` ignora wakes cujo texto não
+      contenha "jorge" — evita que conversas ao fundo ativem o assistente.
+    - **Instalação**: `scripts/setup-voice.sh` cria o venv (`~/.jorge/venv`), instala
+      Vosk/Piper e baixa os modelos (`~/.jorge/models`). Config em `src/shared/config.js`
+      (variáveis `JORGE_VOICE`, `JORGE_VOICE_AUTO`, `JORGE_WAKE_WORD`, `JORGE_MIC_DEVICE`).
 
 ## Formato final
 
@@ -201,5 +230,7 @@ Termine com:
   attach, session, linger, heartbeat, -webkit-app-region, drag/nodrag,
   gio metadata::trusted, clip-path, isometria, foreshortening, trapézio, sombra de
   chão, requestSingleInstanceLock, second-instance, lock de instância, config,
-  variáveis de ambiente, OPENCODE_API_URL, OPENCODE_BIN, contextBridge, módulo).
+  variáveis de ambiente, OPENCODE_API_URL, OPENCODE_BIN, contextBridge, módulo,
+  STT (reconhecimento de fala), TTS (síntese de voz), wake word, Vosk, Piper,
+  arecord, paplay, venv, PCM, onnx, JSON por linha, anti-loop, mudo, microfone).
 - Responda a dúvidas que o Mestre fizer em seguida, no mesmo estilo didático.
