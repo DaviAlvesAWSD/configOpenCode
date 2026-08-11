@@ -139,7 +139,13 @@ e onde está no código:
     `.desktop` com `Exec=~/jorge-pet/launch.sh`, `Icon=jorge-pet`, marcado como
     confiável (`gio set ... metadata::trusted true`) e com permissão de execução para
     o Nemo (Cinnamon) mostrar o ícone clicável sem pedir confirmação.
-18. **Como tudo se conecta (diagrama em texto)** — fluxo de uma mensagem do input
+18. **Trava de instância única** (`main.js`) — `app.requestSingleInstanceLock()`:
+    se o Jorge já está rodando (ex.: subiu no autostart) e o Mestre clica no ícone,
+    a 2ª instância detecta o lock, encerra-se e dispara `second-instance` na 1ª, que
+    apenas traz a janela existente à frente (`win.show()` + `win.focus()`). Sem isso,
+    cada clique criava uma janela transparente idêntica por cima da atual — parecia
+    que "nada acontecia" e janelas invisíveis se acumulavam.
+19. **Como tudo se conecta (diagrama em texto)** — fluxo de uma mensagem do input
     até a resposta na tela do monitor, e o fluxo alternativo via botão TERM.
 
 ## Formato final
@@ -153,5 +159,5 @@ Termine com:
   service, .desktop, autostart, renderer, processo, child_process, spawn, detached,
   attach, session, linger, heartbeat, -webkit-app-region, drag/nodrag,
   gio metadata::trusted, clip-path, isometria, foreshortening, trapézio, sombra de
-  chão).
+  chão, requestSingleInstanceLock, second-instance, lock de instância).
 - Responda a dúvidas que o Mestre fizer em seguida, no mesmo estilo didático.
