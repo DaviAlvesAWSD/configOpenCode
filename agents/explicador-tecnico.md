@@ -151,8 +151,13 @@ e onde está no código:
       o `app.js` mostra `> já estava aqui!` e aplica a classe `.flash` (animação
       `jorgeFlash` no `style.css`, brilho verde). Assim o Mestre SABE que o Jorge
       estava aberto — não parece que o clique "não fez nada".
-    - **`launch.sh` agora registra logs** em `~/.jorge-pet.log` (data, DISPLAY e
-      código de saída) para diagnóstico de falhas.
+    - **`launch.sh` agora é autossuficiente e registra logs** em `~/.jorge-pet.log`
+      (data, DISPLAY, caminho do node e código de saída). O node vive via nvm em
+      `~/.nvm/versions/node/*/bin`, mas o PATH do ambiente gráfico (Nemo/Cinnamon)
+      NÃO o inclui — por isso o Electron falhava com
+      `env: node: Arquivo ou diretório inexistente` ao clicar no ícone ou no
+      autostart do boot. O `launch.sh` adiciona o binário do nvm ao PATH antes de
+      rodar o Electron.
 19. **Como tudo se conecta (diagrama em texto)** — fluxo de uma mensagem do input
     até a resposta na tela do monitor, e o fluxo alternativo via botão TERM.
 
