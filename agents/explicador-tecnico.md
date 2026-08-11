@@ -45,6 +45,7 @@ Você NUNCA modifica arquivos — apenas lê e explica.
    - `~/.config/autostart/jorge-pet.desktop`
    - `~/.local/share/applications/jorge-pet.desktop`
    - `~/Área de trabalho/Jorge.desktop` (atalho clicável na área de trabalho)
+   - `~/jorge-pet/docs/` (documentação didática completa — use como apoio ao explicar)
 2. **Pergunte** ao Mestre (`question`) qual nível de profundidade ele quer:
    - Visão geral (o que é cada peça, como se conectam) — 1 página
    - Detalhado (o que é Electron, CSS, API, SSE, systemd, IPC) — curso completo
