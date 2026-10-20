@@ -10,11 +10,15 @@ mkdir -p ~/.config/opencode
 rm -f ~/.config/opencode/AGENTS.md
 rm -f ~/.config/opencode/opencode.jsonc
 rm -rf ~/.config/opencode/agents
+rm -rf ~/.config/opencode/skills
+rm -rf ~/.config/opencode/commands
 
 # 3. Criar symlinks apontando para o repositório
 ln -s ~/configOpenCode/AGENTS.md ~/.config/opencode/AGENTS.md
 ln -s ~/configOpenCode/opencode.jsonc ~/.config/opencode/opencode.jsonc
 ln -s ~/configOpenCode/agents ~/.config/opencode/agents
+ln -s ~/configOpenCode/skills ~/.config/opencode/skills
+ln -s ~/configOpenCode/commands ~/.config/opencode/commands
 
 # 4. Marcar diretórios como seguros para Git (WSL)
 git config --global --add safe.directory '*'
