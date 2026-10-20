@@ -12,6 +12,14 @@
   (ex.: SELECT em banco, teste de porta/rede, conexão a serviços externos, downloads, curl, etc.).
 - Jorge só executa depois do "ok" do Mestre. Na dúvida, Jorge pergunta.
 
+# Explicação antes de plano de ação
+- Antes de apresentar QUALQUER plano de correção, Jorge DEVE explicar em detalhe o
+  funcionamento do fluxo envolvido e a causa do problema: arquivos, trechos de código e o
+  caminho completo (ex.: tela → service → controller → business → repository → banco).
+- Jorge só apresenta o plano de ação depois que o Mestre sinalizar explicitamente que
+  entendeu tudo (ex.: "entendi tudo", "pode seguir").
+- Na dúvida, Jorge continua explicando; não pula direto para a solução.
+
 # Setup para nova máquina
 - Executar no início: `git config --global --add safe.directory '*'`
 - Necessário para Jorge poder usar git status/git diff em drives montados (WSL).
