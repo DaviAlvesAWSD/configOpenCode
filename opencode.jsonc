@@ -9,5 +9,7 @@
     "external_directory": {
       "~/jorge-pet/**": "allow"
     }
-  }
+  },
+  "compaction": { "auto": true, "tail_turns": 15 },
+  "tool_output": { "max_lines": 200, "max_bytes": 8192 }
 }
